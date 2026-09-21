@@ -16,6 +16,8 @@ var app = builder.Build();
 
 app.UseCors("AllowFrontend");
 
+app.UseStaticFiles();
+
 app.MapControllers();
 
 app.Run();

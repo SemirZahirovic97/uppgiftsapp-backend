@@ -16,6 +16,13 @@ public class TasksController : ControllerBase
 
   private static int _nextId = 4;
 
+  private readonly IWebHostEnvironment _env;
+
+  public TasksController(IWebHostEnvironment env)
+  {
+    _env = env;
+  }
+
   [HttpGet]
   public ActionResult<List<TaskItem>> GetAll()
   {
@@ -42,6 +49,42 @@ public class TasksController : ControllerBase
     task.Title = updated.Title;
     task.Description = updated.Description;
     task.IsDone = updated.IsDone;
+    return Ok(task);
+  }
+
+  [HttpPost("{id}/image")]
+  public async Task<ActionResult<TaskItem>> UploadImage(int id, IFormFile file)
+  {
+    var task = _tasks.FirstOrDefault(t => t.Id == id);
+    if (task == null)
+    {
+      return NotFound();
+    }
+
+    if (file == null || file.Length == 0)
+    {
+      return BadRequest("Ingen fil skickades");
+    }
+
+    var allowed = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+    var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+    if (!allowed.Contains(extension))
+    {
+      return BadRequest("Endast bilder är tillåtna");
+    }
+
+    var folder = Path.Combine(_env.WebRootPath, "uploads");
+    Directory.CreateDirectory(folder);
+
+    var fileName = Guid.NewGuid() + extension;
+    var path = Path.Combine(folder, fileName);
+
+    using (var stream = new FileStream(path, FileMode.Create))
+    {
+      await file.CopyToAsync(stream);
+    }
+
+    task.ImageUrl = "/uploads/" + fileName;
     return Ok(task);
   }
 }
