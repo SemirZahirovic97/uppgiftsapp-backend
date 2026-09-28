@@ -18,3 +18,4 @@ API:et körs på http://localhost:5005. Testa: http://localhost:5005/api/tasks
 - **Ingen databas:** uppgifterna ligger i en lista i minnet och nollställs vid omstart, eftersom kraven inte kräver att data sparas.
 - **Bilder sparas i `wwwroot/uploads`:** uppgiften sparar bara adressen. Filerna får unika namn, och bara bildfiler tillåts.
 - **CORS:** tillåter bara http://localhost:5173.
+- **Lyssnar på 0.0.0.0:** så att mobilappen på telefonen når API:et.
